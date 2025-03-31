@@ -1,5 +1,8 @@
 library(rgplates)
 
+### Version en construccion. 
+
+
 # Función para calcular paleocoordenadas
 calculate_paleocoordinates <- function(df, age, model = "MERDITH2021") {
   # Validar que las columnas 'long' y 'lat' existan en el dataset
