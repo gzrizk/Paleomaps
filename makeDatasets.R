@@ -55,3 +55,8 @@ for (df in split_data) {
 
 # Guardar el archivo principal
 write.csv(fossils, "fossils.csv", row.names = FALSE)
+
+
+
+
+
