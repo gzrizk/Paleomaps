@@ -71,63 +71,30 @@ plot_paleomap <- function(df, age, model = "MERDITH2021", proj = "ESRI:54009") {
   ) %>% 
     st_transform(crs = proj) # Transformar a la proyección especificada
 
-  # Crear grilla de líneas de latitud y longitud
-  graticule <- st_graticule(
-    x = st_bbox(paleoplates_proj), # Usar los límites del mapa proyectado
-    crs = proj, # Proyección del mapa
-    lon = seq(-180, 180, by = 30), # Longitudes cada 30 grados
-    lat = seq(-90, 90, by = 30)    # Latitudes cada 30 grados
-  )
+  # Crear grilla global en WGS84 y proyectarla
+  graticule_wgs84 <- st_graticule(
+    lon = seq(-180, 180, by = 30),
+    lat = seq(-90, 90, by = 30)
+  ) %>% 
+    st_transform(crs = proj)  # Proyectar a Mollweide
 
-  # Configurar área de ploteo con márgenes ajustados
-  par(mar = c(3, 3, 3, 3), bg = "white") # Márgenes más amplios para evitar cortes
-  
-  # Ajustar manualmente los límites para cubrir toda la elipse
-  xlim <- c(-20000000, 20000000) # Límites X ajustados para Mollweide
-  ylim <- c(-10000000, 10000000) # Límites Y ajustados para Mollweide
-  
-  # Dibujar un fondo blanco para completar la elipse
-  plot(1, type = "n", xlim = xlim, ylim = ylim, xlab = "", ylab = "", asp = 1, axes = FALSE)
+  # Límites estándar de la proyección Mollweide
+  xlim <- c(-18086197, 18086197)  # Límites oficiales de Mollweide
+  ylim <- c(-9023548, 9023548)
+
+  # Configurar área de ploteo con los límites correctos de Mollweide
+  par(mar = c(0, 0, 0, 0), bg = "white")  # Eliminar márgenes
+  plot.new()
+  plot.window(xlim = xlim, ylim = ylim, asp = 1)  # Usar límites estándar
+
+  # Dibujar fondo blanco
   rect(xlim[1], ylim[1], xlim[2], ylim[2], col = "white", border = NA)
 
-  # Obtener límites del mapa proyectado
-  bbox <- st_bbox(paleoplates_proj)
-  xlim <- c(bbox["xmin"] * 1.1, bbox["xmax"] * 1.1) # Expandir límites en un 10%
-  ylim <- c(bbox["ymin"] * 1.1, bbox["ymax"] * 1.1) # Expandir límites en un 10%
-
-  # Dibujar un fondo blanco para completar la elipse
-  plot(1, type = "n", xlim = xlim, ylim = ylim, xlab = "", ylab = "", asp = 1, axes = FALSE)
-  rect(xlim[1], ylim[1], xlim[2], ylim[2], col = "white", border = NA)
-
-  # Plotear límites de placas
-  plot(st_geometry(paleoplates_proj),
-    col = "gray",
-    border = NA,
-    add = TRUE
-  )
-
-  # Plotear líneas de costa modernas
-  plot(st_geometry(modern_coast_proj),
-    col = "gray70",
-    border = NA,
-    add = TRUE
-  )
-
-  # Plotear grilla de líneas de latitud y longitud
-  plot(st_geometry(graticule),
-    col = "gray80",
-    lty = "dotted",
-    add = TRUE
-  )
-
-  # Plotear localizaciones fósiles
-  plot(st_geometry(fosiles_sf),
-    pch = 17, # Símbolo triángulo
-    col = "black", # Color del símbolo
-    cex = 1.2, # Tamaño del símbolo
-    lwd = 0.5, # Grosor del borde
-    add = TRUE
-  )
+  # Plotear capas en el orden correcto
+  plot(st_geometry(paleoplates_proj), col = "gray", border = NA, add = TRUE)
+  plot(st_geometry(modern_coast_proj), col = "gray70", border = NA, add = TRUE)
+  plot(st_geometry(graticule_wgs84), col = "gray80", lty = "dotted", add = TRUE)
+  plot(st_geometry(fosiles_sf), pch = 17, col = "black", cex = 1.2, add = TRUE)
 
   # Mensaje de éxito
   message("Mapa generado exitosamente para la edad ", age, " Ma.")
