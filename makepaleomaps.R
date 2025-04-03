@@ -112,8 +112,16 @@ plot_two_maps <- function(df1, age1, df2, age2) {
 =======
 # Función para generar dos mapas apilados y exportarlos a PDF
 plot_two_maps <- function(df1, age1, df2, age2) {
+  # Crear la carpeta 'plots' si no existe
+  if (!dir.exists("plots")) {
+    dir.create("plots")
+  }
+
+  # Generar el nombre del archivo basado en las edades
+  file_name <- sprintf("plots/paleomap_%d_%d.pdf", age1, age2)
+
   # Configurar dispositivo gráfico para exportación a PDF
-  pdf("mapas_apilados.pdf", 
+  pdf(file_name, 
       width = 7.09, height = 9.45)  # Tamaño en pulgadas (180 mm x 240 mm)
 >>>>>>> e946ef4 (Adds function to plot two paleomaps)
 
@@ -121,12 +129,15 @@ plot_two_maps <- function(df1, age1, df2, age2) {
   layout(matrix(c(1, 2), nrow = 2, byrow = TRUE))
   
   # Primer mapa (arriba)
-  plot_paleomap(df1, age1, title = "A. Edad", new_plot = TRUE)
+  plot_paleomap(df1, age1, title = sprintf("Edad: %d Ma", age1), new_plot = TRUE)
   
   # Segundo mapa (abajo)
-  plot_paleomap(df2, age2, title = "B. Edad", new_plot = TRUE)
+  plot_paleomap(df2, age2, title = sprintf("Edad: %d Ma", age2), new_plot = TRUE)
 
   # Cerrar dispositivo gráfico
   dev.off()
+
+  # Mensaje de confirmación
+  message("Archivo guardado como: ", file_name)
 }
 
