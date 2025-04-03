@@ -5,15 +5,15 @@ library(snakecase) # Para convertir nombres a snake_case
 library(purrr)
 
 # Leer los archivos Excel desde el directorio actual
-taxon_data <- read_excel("data/taxon_data_cyathocarpus.xlsx")
-formation_data <- read_excel("data/formation_data_cyathocarpus.xlsx")
-
-# Unir ambos datasets
-fossils <- taxon_data %>%
-  left_join(formation_data, by = c("Formation"))
-
-# Ver resultado
-print(fossils)
+# taxon_data <- read_excel("data/taxon_data_cyathocarpus.xlsx")
+# formation_data <- read_excel("data/formation_data_cyathocarpus.xlsx")
+# 
+# # Unir ambos datasets
+# fossils <- taxon_data %>%
+#   left_join(formation_data, by = c("formation"))
+# 
+# # Ver resultado
+# print(fossils)
 
 # Función para crear datasets separados por AgeGroup
 split_by_age_group <- function(fossils) {

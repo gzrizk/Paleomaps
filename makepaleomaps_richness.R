@@ -45,14 +45,22 @@ plot_paleomap_richness <- function(df, age, model = "MERDITH2021", proj = "ESRI:
   ) %>%
     st_transform(crs = proj) # Transformar a la proyección especificada
 
-  # Configurar área de plot
-  par(mar = c(0, 0, 0, 0), bg = "white")
+  # Configurar área de ploteo con márgenes ajustados
+  par(mar = c(3, 3, 3, 3), bg = "white") # Márgenes más amplios para evitar cortes
+
+  # Ajustar manualmente los límites para cubrir toda la elipse
+  xlim <- c(-20000000, 20000000) # Límites X ajustados para Mollweide
+  ylim <- c(-10000000, 10000000) # Límites Y ajustados para Mollweide
+
+  # Dibujar un fondo blanco para completar la elipse
+  plot(1, type = "n", xlim = xlim, ylim = ylim, xlab = "", ylab = "", asp = 1, axes = FALSE)
+  rect(xlim[1], ylim[1], xlim[2], ylim[2], col = "white", border = NA)
 
   # Plotear límites de placas
   plot(st_geometry(paleoplates_proj),
     col = "gray",
     border = NA,
-    main = paste("Reconstrucción", age, "Ma")
+    add = TRUE
   )
 
   # Plotear líneas de costa modernas
@@ -62,16 +70,18 @@ plot_paleomap_richness <- function(df, age, model = "MERDITH2021", proj = "ESRI:
     add = TRUE
   )
 
-  # Escalar el tamaño de los puntos en función del número de especies
-  max_cex <- 3 # Tamaño máximo del punto
-  min_cex <- 1 # Tamaño mínimo del punto
-  scaled_cex <- rescale(fosiles_sf$species_count, to = c(min_cex, max_cex))
+  # Plotear grilla de líneas de latitud y longitud
+  plot(st_geometry(graticule),
+    col = "gray80",
+    lty = "dotted",
+    add = TRUE
+  )
 
-  # Plotear localizaciones fósiles con tamaño proporcional al número de especies
+  # Plotear localizaciones fósiles
   plot(st_geometry(fosiles_sf),
     pch = 17, # Símbolo triángulo
     col = "black", # Color del símbolo
-    cex = scaled_cex, # Tamaño del símbolo proporcional al número de especies
+    cex = 1.2, # Tamaño del símbolo
     lwd = 0.5, # Grosor del borde
     add = TRUE
   )
