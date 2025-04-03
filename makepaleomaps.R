@@ -41,7 +41,7 @@ load_all_datasets("data/split")
 
 
 # Función para generar un mapa paleogeográfico
-plot_paleomap <- function(df, age, model = "MERDITH2021", proj = "ESRI:54009") {
+plot_paleomap <- function(df, age, model = "MERDITH2021", proj = "ESRI:54009", new_plot = TRUE, title = "") {
   # Validar que las columnas 'long' y 'lat' existan en el dataset
   if (!all(c("long", "lat") %in% colnames(df))) {
     stop("El dataset debe contener las columnas 'long' y 'lat'.")
@@ -76,27 +76,49 @@ plot_paleomap <- function(df, age, model = "MERDITH2021", proj = "ESRI:54009") {
     lon = seq(-180, 180, by = 30),
     lat = seq(-90, 90, by = 30)
   ) %>% 
-    st_transform(crs = proj)  # Proyectar a Mollweide
+    st_transform(crs = proj)
 
-  # Límites estándar de la proyección Mollweide
-  xlim <- c(-18086197, 18086197)  # Límites oficiales de Mollweide
+  # Límites estándar de Mollweide
+  xlim <- c(-18086197, 18086197)
   ylim <- c(-9023548, 9023548)
 
-  # Configurar área de ploteo con los límites correctos de Mollweide
-  par(mar = c(0, 0, 0, 0), bg = "white")  # Eliminar márgenes
-  plot.new()
-  plot.window(xlim = xlim, ylim = ylim, asp = 1)  # Usar límites estándar
+  # Configurar área de ploteo solo si es un nuevo gráfico
+  if (new_plot) {
+    par(mar = c(0.1, 0.1, 2, 0.1))  # Margen superior para el título
+    plot.new()
+    plot.window(xlim = xlim, ylim = ylim, asp = 1)
+    rect(xlim[1], ylim[1], xlim[2], ylim[2], col = "white", border = NA)
+  }
 
-  # Dibujar fondo blanco
-  rect(xlim[1], ylim[1], xlim[2], ylim[2], col = "white", border = NA)
+  # Plotear capas
+  plot(st_geometry(paleoplates_proj), col = "gray", border = NA, add = TRUE)
+  plot(st_geometry(modern_coast_proj), col = "gray70", border = NA, add = TRUE)
+  plot(st_geometry(graticule_wgs84), col = "gray80", lty = 3, add = TRUE)
+  plot(st_geometry(fosiles_sf), pch = 17, col = "black", cex = 1.2, add = TRUE)
 
-  # Plotear capas en el orden correcto
-  plot(st_geometry(paleoplates_proj), col = "gray", border = NA, add = TRUE)  # Continentes en gris
-  plot(st_geometry(modern_coast_proj), col = "gray70", border = NA, add = TRUE)  # Líneas de costa modernas
-  plot(st_geometry(graticule_wgs84), col = "gray80", lty = 3, add = TRUE)  # Grilla en líneas punteadas
-  plot(st_geometry(fosiles_sf), pch = 17, col = "black", cex = 1.2, add = TRUE)  # Fósiles en negro
+  # Añadir título
+  if (new_plot) {
+    title(paste(title, age, "Ma"), line = 0.5, cex.main = 0.9)
+  }
+}
 
-  # Mensaje de éxito
-  message("Mapa generado exitosamente para la edad ", age, " Ma.")
+# Función para generar dos mapas apilados
+plot_two_maps <- function(df1, age1, df2, age2) {
+  # Configurar dispositivo gráfico para exportación
+  tiff("mapas_apilados.tiff", 
+       width = 180, height = 240, units = "mm", res = 600, 
+       compression = "lzw", bg = "white")
+
+  # Configurar layout vertical (2 filas, 1 columna)
+  layout(matrix(c(1, 2), nrow = 2, byrow = TRUE))
+  
+  # Primer mapa (arriba)
+  plot_paleomap(df1, age1, title = "A. Edad", new_plot = TRUE)
+  
+  # Segundo mapa (abajo)
+  plot_paleomap(df2, age2, title = "B. Edad", new_plot = TRUE)
+
+  # Cerrar dispositivo gráfico
+  dev.off()
 }
 
