@@ -91,10 +91,10 @@ plot_paleomap <- function(df, age, model = "MERDITH2021", proj = "ESRI:54009") {
   rect(xlim[1], ylim[1], xlim[2], ylim[2], col = "white", border = NA)
 
   # Plotear capas en el orden correcto
-  plot(st_geometry(paleoplates_proj), col = "gray", border = NA, add = TRUE)
-  plot(st_geometry(modern_coast_proj), col = "gray70", border = NA, add = TRUE)
-  plot(st_geometry(graticule_wgs84), col = "gray80", lty = "dotted", add = TRUE)
-  plot(st_geometry(fosiles_sf), pch = 17, col = "black", cex = 1.2, add = TRUE)
+  plot(st_geometry(paleoplates_proj), col = "gray", border = NA, add = TRUE)  # Continentes en gris
+  plot(st_geometry(modern_coast_proj), col = "gray70", border = NA, add = TRUE)  # Líneas de costa modernas
+  plot(st_geometry(graticule_wgs84), col = "gray80", lty = 3, add = TRUE)  # Grilla en líneas punteadas
+  plot(st_geometry(fosiles_sf), pch = 17, col = "black", cex = 1.2, add = TRUE)  # Fósiles en negro
 
   # Mensaje de éxito
   message("Mapa generado exitosamente para la edad ", age, " Ma.")
