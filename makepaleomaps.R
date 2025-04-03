@@ -102,12 +102,20 @@ plot_paleomap <- function(df, age, model = "MERDITH2021", proj = "ESRI:54009", n
   }
 }
 
+<<<<<<< HEAD
 # Función para generar dos mapas apilados
 plot_two_maps <- function(df1, age1, df2, age2) {
   # Configurar dispositivo gráfico para exportación
   tiff("mapas_apilados.tiff", 
        width = 180, height = 240, units = "mm", res = 600, 
        compression = "lzw", bg = "white")
+=======
+# Función para generar dos mapas apilados y exportarlos a PDF
+plot_two_maps <- function(df1, age1, df2, age2) {
+  # Configurar dispositivo gráfico para exportación a PDF
+  pdf("mapas_apilados.pdf", 
+      width = 7.09, height = 9.45)  # Tamaño en pulgadas (180 mm x 240 mm)
+>>>>>>> e946ef4 (Adds function to plot two paleomaps)
 
   # Configurar layout vertical (2 filas, 1 columna)
   layout(matrix(c(1, 2), nrow = 2, byrow = TRUE))
